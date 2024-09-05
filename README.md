@@ -32,7 +32,7 @@ cd docker & sh build.sh
 
 ## Running an example
 
-To test the work of MAPF-GPT, you can simply run the `example.py` script. You can adjust the parameters, such as the number of agents or the name of the map. You can also switch between MAPF-GPT-2M and MAPF-GPT-6M.
+To test the work of MAPF-GPT, you can simply run the `example.py` script. You can adjust the parameters, such as the number of agents or the name of the map. You can also switch between MAPF-GPT-2M, MAPF-GPT-6M and MAPF-GPT-85M models.
 
 ```
 python3 example.py
