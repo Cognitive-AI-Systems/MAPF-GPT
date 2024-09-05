@@ -3,15 +3,15 @@
 
 
 <div align="center" dir="auto">
-   <p dir="auto"><img src="svg/puzzles.svg" alt="Follower" style="max-width: 100%;"></p>
-</div>
+   <p dir="auto"><img src="svg/puzzles.svg" alt="Follower" style="max-width: 80%;"></p>
+
 
 ---
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/Cognitive-AI-Systems/MAPF-GPT/blob/main/LICENSE)
 [![arXiv](https://img.shields.io/badge/arXiv-2310.01207-b31b1b.svg)](https://arxiv.org/abs/2409.00134)
 [![Hugging Face](https://img.shields.io/badge/Weights-MAPF--GPT-blue?logo=huggingface)](https://huggingface.co/aandreychuk/MAPF-GPT/tree/main)
-
+</div>
 
 The repository consists of the following crucial parts:
 
@@ -19,7 +19,6 @@ The repository consists of the following crucial parts:
 - `benchmark.py` - a script that launches the evaluation of the MAPF-GPT model on the POGEMA benchmark set of maps.
 - `generate_dataset.py` - a script that generates a 1B training dataset. The details are provided inside the script in the main() function.
 - `train.py` - a script that launches the training of the MAPF-GPT model.
-- `weights` - a folder that contains pretrained models MAPF-GPT-2M and MAPF-GPT-6M. They are utilized in `example.py` and `benchmark.py` scripts.
 - `eval_configs` - a folder that contains configs from the POGEMA benchmark. Required by the `benchmark.py` script.
 - `dataset_configs` - a folder that contains configs to generate training and validation datasets. Required by the `generate_dataset.py` script.
 
@@ -44,6 +43,7 @@ Besides statistics about SoC, success rate, etc., you will also get an SVG file 
 ## Running evaluation
 
 You can run the `benchmark.py` script, which will run both MAPF-GPT-2M and MAPF-GPT-6M models on all the scenarios from the POGEMA benchmark.
+You can also run the MAPF-GPT-85M model by setting `path_to_weights` to `weights/model-85M.pt`. The weights for all models will be downloaded automatically.
 
 ```
 python3 benchmark.py
