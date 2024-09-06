@@ -9,9 +9,9 @@
 ---
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/Cognitive-AI-Systems/MAPF-GPT/blob/main/LICENSE)
-[![arXiv](https://img.shields.io/badge/arXiv-2310.01207-b31b1b.svg)](https://arxiv.org/abs/2409.00134)
+[![arXiv](https://img.shields.io/badge/arXiv-2409.00134-b31b1b.svg)](https://arxiv.org/abs/2409.00134)
 [![Hugging Face](https://img.shields.io/badge/Weights-MAPF--GPT-blue?logo=huggingface)](https://huggingface.co/aandreychuk/MAPF-GPT/tree/main)
-[![Hugging Face](https://img.shields.io/badge/Dataset-MAPF--GPT-blue?logo=huggingface)](https://huggingface.co/datasets/aandreychuk/MAPF-GPT)
+[![Hugging Face](https://img.shields.io/badge/Dataset-MAPF--GPT-blue?logo=huggingface)](https://huggingface.co/datasets/aandreychuk/MAPF-GPT/tree/main)
 </div>
 
 The repository consists of the following crucial parts:
