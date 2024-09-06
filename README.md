@@ -19,6 +19,7 @@ The repository consists of the following crucial parts:
 - `example.py` - an example of code to run the MAPF-GPT approach.
 - `benchmark.py` - a script that launches the evaluation of the MAPF-GPT model on the POGEMA benchmark set of maps.
 - `generate_dataset.py` - a script that generates a 1B training dataset. The details are provided inside the script in the main() function.
+- `download_dataset.py` - a script that downloads 1B training dataset and 1M validation one. The dataset is uploaded to Hugging Face.
 - `train.py` - a script that launches the training of the MAPF-GPT model.
 - `eval_configs` - a folder that contains configs from the POGEMA benchmark. Required by the `benchmark.py` script.
 - `dataset_configs` - a folder that contains configs to generate training and validation datasets. Required by the `generate_dataset.py` script.
@@ -52,15 +53,27 @@ python3 benchmark.py
 
 The results will be stored in the `eval_configs` folder near the corresponding configs. They can also be logged into wandb. The tables with average success rates will be displayed directly in the console.
 
-## Generating dataset
+## Dataset
 
-Due to the very large size of the dataset, we are not able to upload it to the repository. However, we provide a script that can complete all the steps required to generate the dataset, including the instance generation process (via POGEMA), solving the instances via LaCAM, generating and filtering observations, shuffling the data, and saving the dataset into multiple `.arrow` files for further efficient in-memory operation.
+To train MAPF-GPT, we generated a training dataset consisting of 1 billion tensor-action pairs (specifically, 1,000 * 2^20). We used the LaCAM approach as the source of expert data. 90% of the data in the dataset was obtained from maze maps, while the remaining 10% was sourced from random maps. It requires 256 GB of disk space and is divided into 500 files, each containing 2^21 tensor-action pairs and occupying 522 MB of disk space. Additionally, there is a small validation dataset with 2^20 tensor-action pairs, obtained from maps not included in the training dataset. The validation dataset has a 1:1 ratio of mazes to random maps, compared to a 9:1 ratio in the training dataset.
+
+### Downloading dataset
+
+The dataset is available on the Hugging Face Hub. You can download it using the `download_dataset.py` script. Adjust the number of files downloaded to manage disk space if you don't need the entire 1 billion train dataset.
+
+```
+python3 download_dataset.py
+```
+
+### Generating the dataset
+
+If you want to generate the dataset from scratch or create a modified version, use the provided script. It handles all necessary steps, including instance generation (via POGEMA), solving instances (via LaCAM), generating and filtering observations, shuffling the data, and saving it into multiple `.arrow` files for efficient in-memory operation.
 
 ```
 python3 generate_dataset.py
 ```
 
-Please note that the full training dataset for 1B observation-gt_action pairs requires 256 GB of disk space and additionally around 20 GB for temporary files. It also requires a lot of time to solve all instances via LaCAM. By modifying the config files in `dataset_configs` (adjusting the number of seeds, reducing the number of maps), you can reduce the time and space required to generate the dataset (as well as its final size).
+Please note that generating the full training dataset of 1 billion observation-action pairs requires 256 GB of disk space, plus approximately 20 GB for temporary files. Additionally, solving all instances with LaCAM takes significant time. You can reduce the time and space needed, as well as the final dataset size, by modifying the configuration files in `dataset_configs` (e.g., adjusting the number of seeds or reducing the number of maps).
 
 ## Running training of MAPF-GPT
 
