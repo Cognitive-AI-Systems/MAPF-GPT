@@ -256,8 +256,8 @@ def generate_chunks():
         process_files(maze_chunks[i], random_chunks[i], f"{DATASET_FOLDER}/chunk_{i}")
         
 def main():
-     # Step 1: Run LaCAM to obtain expert data in json format.
-    #run_expert()
+    # Step 1: Run LaCAM to obtain expert data in json format.
+    run_expert()
 
     # Step 2: Load one (or mutiple) big json file and split it (them) into small ones (1 map = 1 json).
     files = [f"{EXPERT_DATA_FOLDER}/{config[:-5]}/LaCAM.json" for config in CONFIGS]
