@@ -316,6 +316,8 @@ elif init_from == "resume":
     iter_num = checkpoint["iter_num"]
     best_val_loss = checkpoint["best_val_loss"]
 
+print("number of parameters: %.2fM" % (model.get_num_params() / 1e6,))
+
 model.to(device)
 
 # initialize a GradScaler. If enabled=False scaler is a no-op
