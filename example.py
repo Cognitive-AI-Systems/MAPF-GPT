@@ -1,6 +1,7 @@
 import argparse
 from pathlib import Path
 
+import torch
 import yaml
 from pogema_toolbox.create_env import Environment
 from pogema_toolbox.evaluator import run_episode
@@ -49,8 +50,15 @@ def main():
         collision_system="soft",
     )
 
-    env = create_eval_env(env_cfg)
+    # pytorch seeding
+    torch_seed = 42
+    torch.manual_seed(torch_seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(torch_seed)
+    torch.backends.mps.is_available()
+    torch.backends.cudnn.deterministic = True
 
+    env = create_eval_env(env_cfg)
     algo = MAPFGPTInference(MAPFGPTInferenceConfig(path_to_weights=f'weights/model-{args.model}.pt', device=args.device))
     algo.reset_states()
     results = run_episode(env, algo)
