@@ -70,6 +70,10 @@ class MAPFGPTInference:
             hf_hub_download(repo_id=self.cfg.repo_id, filename=path_to_weights.name, local_dir=path_to_weights.parent)
             ToolboxRegistry.info(f'Using weights loaded from huggingface: {path_to_weights}')
 
+        if self.cfg.device in ['mps', 'cuda'] and not torch.cuda.is_available() if self.cfg.device == 'cuda' else not torch.backends.mps.is_available():
+            ToolboxRegistry.warning(f'{self.cfg.device} is not available, using cpu instead!')
+            self.cfg.device = 'cpu'
+
         checkpoint = torch.load(
             Path(self.cfg.path_to_weights), map_location=self.cfg.device
         )
