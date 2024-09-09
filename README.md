@@ -35,13 +35,26 @@ cd docker & sh build.sh
 
 ## Running an example
 
-To test the work of MAPF-GPT, you can simply run the `example.py` script. You can adjust the parameters, such as the number of agents or the name of the map. You can also switch between MAPF-GPT-2M, MAPF-GPT-6M and MAPF-GPT-85M models.
+To test MAPF-GPT, you can simply run the `example.py` script. By default, it uses the MAPF-GPT-2M model, but this can be adjusted.  
+Additionally, there is a list of optional arguments: `--map_name`, `--device`, `--num_agents`, `--seed`, `--max_episode_steps`, `--model`, `--show_map_names`. The `--map_name` argument allows you to select a map from those available in the `eval_configs` folder. To list all available maps, you can provide the `--show_map_names` option or look inside `eval_config` folder. Here are a few examples from each set: `validation-random-seed-000`, `validation-mazes-seed-000`, `wfi_warehouse`, `Berlin_1_256_00`, `puzzle-00`.  
 
+It is recommended to use GPU-accelerated setups; however, smaller models can be run on a CPU. For Apple Silicon machines, it's recommended to use `--device mps`, which significantly speeds up inference.  
+You can choose from `2M`, `6M`, and `85M` model sizes, which will be automatically downloaded from Hugging Face. Be aware that the 85M model requires 1 GB of disk space.
+
+
+Here is an example of running MAPF-GPT-2M on a maze map:
 ```
-python3 example.py
+python3 example.py --map_name validation-mazes-seed-000 --model 2M --num_agents 32
 ```
 
-Besides statistics about SoC, success rate, etc., you will also get an SVG file that animates the solution found by MAPF-GPT (`out.svg`).
+
+Here is an example of running MAPF-GPT-85M on `wfi_warehouse` map:
+```
+python3 example.py --map_name wfi_warehouse --model 85M --num_agents 192
+```
+
+In addition to statistics about SoC, success rate, etc., you will also get an SVG file that animates the solution found by MAPF-GPT, which will be saved to the `svg/` folder.
+
 
 ## Running evaluation
 
