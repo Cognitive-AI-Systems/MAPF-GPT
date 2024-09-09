@@ -2,7 +2,6 @@ numpy>=1.21.5,<=1.23.1
 torch>=2.0
 pydantic>=1.8.2,<=1.9.1
 pytest>=6.2.5,<=7.1.2
-sample-factory==2.1.1
 pandas<=1.4
 tensorboard>=1.15.0
 tensorboardx>=2.0
