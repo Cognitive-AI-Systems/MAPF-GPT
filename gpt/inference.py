@@ -1,4 +1,3 @@
-import json
 from pathlib import Path
 from typing import Literal, Optional
 
@@ -50,6 +49,7 @@ class MAPFGPTInference:
         self.cfg: MAPFGPTInferenceConfig = cfg
         self.cost2go_data = None
         self.actions_history = None
+        self.position_history = None
         self.encoder = Encoder(
             InputParameters(
                 num_agents=cfg.num_agents,
@@ -90,17 +90,8 @@ class MAPFGPTInference:
             self.net.eval()
 
     def generate_input(self, observations):
-        previous_actions = [[] for _ in range(len(observations))]
         next_actions = ["" for _ in range(len(observations))]
         for agent_idx, obs in enumerate(observations):
-            if len(self.actions_history[agent_idx]) < self.cfg.num_previous_actions:
-                previous_actions[agent_idx] = ["n"] * (
-                        self.cfg.num_previous_actions - len(self.actions_history[agent_idx])
-                ) + self.actions_history[agent_idx]
-            else:
-                previous_actions[agent_idx] = self.actions_history[agent_idx][
-                                              -self.cfg.num_previous_actions:
-                                              ]
             next_action = ""
             for m in [[-1, 0], [1, 0], [0, -1], [0, 1]]:
                 new_pos = (obs["global_xy"][0] + m[0], obs["global_xy"][1] + m[1])
@@ -138,14 +129,16 @@ class MAPFGPTInference:
                     observations[n]["global_xy"][0] - obs["global_xy"][0],
                     observations[n]["global_xy"][1] - obs["global_xy"][1],
                 )
-                agents_info.append(
-                    {
-                        "relative_pos": relative_xy,
-                        "relative_goal": relative_goal,
-                        "previous_actions": previous_actions[n],
-                        "next_action": next_actions[n],
-                    }
-                )
+                if -self.cfg.agents_radius <= relative_xy[0] <= self.cfg.agents_radius \
+                    and -self.cfg.agents_radius <= relative_xy[1] <= self.cfg.agents_radius:
+                    agents_info.append(
+                        {
+                            "relative_pos": relative_xy,
+                            "relative_goal": relative_goal,
+                            "previous_actions": self.actions_history[n],
+                            "next_action": next_actions[n],
+                        }
+                    )
             inputs.append(
                 {
                     "agents": agents_info,
@@ -163,13 +156,20 @@ class MAPFGPTInference:
 
     def act(self, observations):
         num_agents = len(observations)
-        moves = ["w", "u", "d", "l", "r"]
+        moves = {(0, 0): "w", (-1, 0): "u", (1, 0): "d", (0, -1): "l", (0, 1): "r"}
         if self.cost2go_data is None:
             global_obs = observations[0]["global_obstacles"].copy().astype(int).tolist()
             self.cost2go_data = cost2go.precompute_cost2go(
                 global_obs, self.cfg.cost2go_radius
             )
-            self.actions_history = [[] for _ in range(num_agents)]
+            self.actions_history = [["n" for _ in range(self.cfg.num_previous_actions)] for _ in range(num_agents)]
+            self.position_history = [[obs['global_xy']] for obs in observations]
+        else:
+            for i in range(num_agents):
+                self.position_history[i].append(observations[i]["global_xy"])
+                self.actions_history[i].append(moves[(self.position_history[i][-1][0] - self.position_history[i][-2][0], 
+                                                      self.position_history[i][-1][1] - self.position_history[i][-2][1])])
+                self.actions_history[i] = self.actions_history[i][-self.cfg.num_previous_actions:]
         inputs = self.generate_input(observations)
         tensor_obs = torch.tensor(
             [self.encoder.encode(input) for input in inputs],
@@ -180,11 +180,9 @@ class MAPFGPTInference:
         actions = torch.squeeze(self.net.act(tensor_obs)).tolist()
         if not isinstance(actions, list):
             actions = [actions]
-        for agent_idx in range(num_agents):
-            self.actions_history[agent_idx].append(moves[actions[agent_idx]])
-
         return actions
 
     def reset_states(self):
         self.cost2go_data = None
         self.actions_history = None
+        self.position_history = None
