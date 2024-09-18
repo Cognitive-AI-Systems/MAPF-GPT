@@ -15,14 +15,14 @@ from tokenizer.tokenizer import Encoder, InputParameters
 
 class MAPFGPTInferenceConfig(AlgoBase, extra=Extra.forbid):
     name: Literal["MAPF-GPT"] = "MAPF-GPT"
-    num_agents: int = 13
+    num_agents: int = 8
     num_previous_actions: int = 5
     cost2go_value_limit: int = 20
     agents_radius: int = 5
-    cost2go_radius: int = 5
+    cost2go_radius: int = 4
     path_to_weights: Optional[str] = "weights/model-6M.pt"
     device: str = "cuda"
-    context_size: int = 256
+    context_size: int = 128
     mask_actions_history: bool = False
     mask_goal: bool = False
     mask_cost2go: bool = False

@@ -16,7 +16,7 @@ struct InputParameters {
     int cost2go_value_limit;
     int num_agents;
     int num_previous_actions;
-    int context_size = 256;
+    int context_size;
 };
 
 struct AgentsInfo
@@ -86,6 +86,7 @@ public:
 
     std::vector<int> encode(const std::vector<AgentsInfo>& agents, const std::vector<std::vector<int>> &cost2go) {
         std::vector<int> agents_indices;
+        bool first_agent = true;
         for (const auto& agent : agents) {
             std::vector<int> coord_indices = {
                 int_vocab.at(agent.relative_pos.first),
@@ -93,15 +94,18 @@ public:
                 int_vocab.at(agent.relative_goal.first),
                 int_vocab.at(agent.relative_goal.second)
             };
-
-            std::vector<int> actions_indices;
-            for (const auto& action : agent.previous_actions) {
-                actions_indices.push_back(str_vocab.at(action));
-            }
-            std::vector<int> next_action_indices = {str_vocab.at(agent.next_action)};
-
             agents_indices.insert(agents_indices.end(), coord_indices.begin(), coord_indices.end());
-            agents_indices.insert(agents_indices.end(), actions_indices.begin(), actions_indices.end());
+
+            if (first_agent) {
+                std::vector<int> actions_indices;
+                for (const auto& action : agent.previous_actions) {
+                    actions_indices.push_back(str_vocab.at(action));
+                }
+                agents_indices.insert(agents_indices.end(), actions_indices.begin(), actions_indices.end());
+                first_agent = false;
+            }
+
+            std::vector<int> next_action_indices = {str_vocab.at(agent.next_action)};
             agents_indices.insert(agents_indices.end(), next_action_indices.begin(), next_action_indices.end());
         }
 
@@ -116,7 +120,7 @@ public:
         std::vector<int> result;
         result.insert(result.end(), cost2go_indices.begin(), cost2go_indices.end());
         result.insert(result.end(), agents_indices.begin(), agents_indices.end());
-        while(result.size() < 256)
+        while(result.size() < cfg.context_size)
             result.push_back(str_vocab["!"]);
         return result;
     }

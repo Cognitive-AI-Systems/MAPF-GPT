@@ -161,7 +161,7 @@ def process_files(maze_files, random_files, output_file):
     maze_elements_to_pick, total_maze_elements = calculate_elements_to_pick(maze_data, maze_desired_size)
     random_elements_to_pick, total_random_elements = calculate_elements_to_pick(random_data, random_desired_size)
     
-    all_tensors = np.empty((total_maze_elements + total_random_elements, 256), dtype=np.int8)
+    all_tensors = np.empty((total_maze_elements + total_random_elements, 128), dtype=np.int8)
     all_actions = np.empty(total_maze_elements + total_random_elements, dtype=np.int8)
     
     current_index = 0

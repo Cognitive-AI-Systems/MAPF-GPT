@@ -147,14 +147,13 @@ class Encoder:
             ]
         ):
             idx = self.mask(idx)
-        agents_info_size = 4 + self.cfg.num_previous_actions + 1
+        agents_info_size = 5
         cost2go_size = (self.cfg.cost2go_radius * 2 + 1) ** 2
         agents = []
         for i in range(self.cfg.num_agents):
             agent_indices = idx[
-                cost2go_size
-                + i * agents_info_size : cost2go_size
-                + (i + 1) * agents_info_size
+                cost2go_size + i * agents_info_size :
+                cost2go_size + (i + 1) * agents_info_size + 4 * int(i == 0)
             ]
 
             relative_pos = (
