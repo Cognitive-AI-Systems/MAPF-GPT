@@ -7,7 +7,7 @@ n_layer = 5
 n_head = 5
 n_embd = 160
 
-train_data_file = "dataset/train-40M"
+train_data_file = "dataset/train"
 valid_data_file = "dataset/validation"
 
 block_size = 256
