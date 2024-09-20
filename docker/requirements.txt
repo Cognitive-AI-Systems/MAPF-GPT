@@ -20,5 +20,5 @@ importlib-metadata==4.13.0
 dask[distributed]
 loguru
 pogema-toolbox==0.1.0
-h5py
 pyarrow
+huggingface_hub
