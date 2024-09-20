@@ -197,14 +197,19 @@ def batch_generator(path):
             with pa.memory_map(file_path) as source:
                 table = pa.ipc.open_file(source).read_all()
             input_tensors = table["input_tensors"].to_numpy()
+            input_tensors = np.stack(input_tensors).astype(np.int64)
             gt_actions = table["gt_actions"].to_numpy()
+            gt_actions = np.array(gt_actions, dtype=np.int64)
 
             indices = np.arange(len(input_tensors))
             np.random.shuffle(indices)
 
             shuffled_input_tensors = input_tensors[indices]
             shuffled_gt_actions = gt_actions[indices]
-
+            shuffled_input_tensors = torch.tensor(shuffled_input_tensors, dtype=torch.long).to(device, non_blocking=True)
+            shuffled_gt_actions = torch.full_like(shuffled_input_tensors, -1, dtype=torch.long)
+            shuffled_gt_actions[:, -1] = torch.tensor(gt_actions, dtype=torch.long)
+            shuffled_gt_actions = shuffled_gt_actions.to(device, non_blocking=True)
             yield shuffled_input_tensors, shuffled_gt_actions
 
     for input_tensors, gt_actions in read_arrow_files(file_paths):
@@ -236,31 +241,7 @@ val_data = batch_generator(valid_data_file)
 
 def get_batch(data):
     batch = next(data)
-    # Prepare lists to hold tensors
-    x_list = []
-    y_list = []
-
-    # Process each item in the batch
-    for i in range(batch_size):
-        input_tensor = torch.tensor(batch["input_tensors"][i], dtype=torch.long)
-        target_tensor = torch.full_like(input_tensor, -1)
-        target_tensor[-1] = torch.tensor(batch["gt_actions"][i], dtype=torch.long)
-        x_list.append(input_tensor)
-        y_list.append(target_tensor)
-
-    # Convert lists to tensors
-    x = torch.stack(x_list)
-    y = torch.stack(y_list)
-
-    # Move tensors to the appropriate device
-    if "cuda" in device:
-        x = x.pin_memory().to(device, non_blocking=True)
-        y = y.pin_memory().to(device, non_blocking=True)
-    else:
-        x = x.to(device)
-        y = y.to(device)
-
-    return x, y
+    return batch["input_tensors"], batch["gt_actions"]
 
 
 # init these up here, can override if init_from='resume' (i.e. from a checkpoint)
